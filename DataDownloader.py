@@ -1,4 +1,3 @@
-#!/usr/bin/python2
 # coding=utf-8
 # author: jpmarchezi
 from __future__ import print_function

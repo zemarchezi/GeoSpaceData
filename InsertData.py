@@ -1,19 +1,15 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Created on Thu May  3 09:46:00 2018
-
 @author: jose
 """
-
-from sqlalchemy import create_engine, MetaData, Table, inspect
-import sqlalchemy as sqla
-from base import Base
+from sqlalchemy import MetaData, Table, inspect
 from engine import engin
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import sessionmaker
 from ExtractData import ExtractData
-import datetime
 import os
+import pandas as pd
+import matplotlib.pyplot as plt
 
 probe = 'A'
 path = os.getcwd() #'/home/jose/MEGA/Doutorado/Progs/plot_ULF/dados/'
@@ -22,38 +18,48 @@ dataOmniDownlDir = dataDownlDir + '/omni/'
 plotDir = dataDownlDir + '/plots/' # path + '/plots/'
 
 
-ee = ExtractData(filename='*20140912*', variables=['Epoch', 'L', 'L_star', 'FEDU_Energy', 'FEDU', 'MLT'], directory=dataDownlDir, flag=0)
+ee = ExtractData(filename='*20140914*', directory=dataDownlDir, flag=0)
 
-rep = ee.extract_rept()
+ddata = ee.readData()
 
-energy_values = []
-for i in range(0,12):
-    energy_values.append('en_lev_'+str(i+1))
+rep = ee.extract_rept(variables=['Epoch', 'L', 'L_star', 'FEDU_Energy', 'FEDU', 'MLT'])
 
-bb = []
-bb.append(rep[0][0])
-for s in rep[4][0]:
-    bb.append(s)
-
-
-
-
-
-
-
-
+# connect to a database
 engine = engin(user='jose', passwd='dados', database='VanAllenA', host='localhost')
-
+conn = engine.connect()
 meta = MetaData(engine)
-
+# create a session
 Session = sessionmaker(bind=engine)
 Session.configure(bind=engine)
 session = Session()
 
+inspec = inspect(engine)
 
-tes = Rept(id=datetime.datetime(2015,6,4), lshell=1,lstar=1.5, mlt=2.65, en_lev_1=9.5,en_lev_2=9.5,en_lev_3=9.5, en_lev_4=9.5, en_lev_5=9.5, en_lev_6=9.5, en_lev_7=9.5, en_lev_8=9.5, en_lev_9=9.5, en_lev_10=9.5, en_lev_11=9.5, en_lev_12=9.5)
+tab_nam = 'rept_en'
 
-for table_name in inspector.get_table_names():
+col_nam = []
+for column in inspec.get_columns(tab_nam):
+    col_nam.append(column['name'])
+
+rep.columns = col_nam
+
+tta = rep.to_dict(orient='records')
+
+table = Table(tab_nam, meta, autoload=True)
+
+# Inser the dataframe into the database in one bulk
+try:
+    conn.execute(table.insert(), tta)
+except Exception, e:
+    print e
+
+# Commit the changes
+session.commit()
+
+# Close the session
+session.close()
+
+for table_name in inspec.get_table_names():
     print ("Name: %s" % table_name)
-    for column in inspector.get_columns(table_name):
+    for column in inspec.get_columns(table_name):
         print("Column: %s" % column['name'])

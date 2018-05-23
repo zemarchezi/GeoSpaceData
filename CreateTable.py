@@ -6,12 +6,11 @@ Created on Wed May  2 15:13:09 2018
 @author: jose
 """
 
-from sqlalchemy import create_engine, Column, Integer, String, Boolean, Numeric, ForeignKey, TIMESTAMP, REAL
+from sqlalchemy import Column
 import sqlalchemy as sqla
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
-
-Base = declarative_base()
+from base import Base
+from engine import engin
+from sqlalchemy.orm import sessionmaker
 
 class Rept(Base):
     __tablename__ = 'rept_en'
@@ -41,7 +40,7 @@ class Efw_norm(Base):
     efield_mgse = Column('efield_mgse', sqla.REAL)
     spinAxis_gse = Column('spinAxis_gse', sqla.REAL)
 
-class Efw_High(Base):efield_mgse
+class Efw_High(Base):
     __tablename__ = 'efwhigh_field'
 
     id = Column(sqla.TIMESTAMP(timezone=False), primary_key=True)
@@ -57,8 +56,7 @@ class Emfisis(Base):
 
 
 if __name__ == '__main__':
-    engine = create_engine('postgresql://jose:dados@localhost:5432/VanAllenA')
+    # Connect to the database
+    engine = engin(user='jose', passwd='dados', host='localhost', database='VanAllenA')
+    # commit changes in connectDatabase
     Base.metadata.create_all(engine)
-
-    Session = sessionmaker(bind=engine)
-    Session.configure(bind=engine)

@@ -6,6 +6,7 @@ import numpy as np
 from spacepy import pycdf
 import os
 import glob
+import pandas as pd
 #
 #
 ##################################################################
@@ -14,14 +15,12 @@ import glob
 ##################################################################
 #
 class ExtractData():
-    def __init__(self, filename, directory, variables, flag):
+    def __init__(self, filename, directory, flag):
         self.filen = [filename]
-        self.var = variables
         self.rem = flag
         self.dir = directory
 
-    def extract_rept(self):
-        # var_rept = variables
+    def seeVariables(self):
         files = []
         files_rept = []
         for names in self.filen:
@@ -30,29 +29,100 @@ class ExtractData():
             files_rept.append(glob.glob(local_file_rept)[0])
         self.files = files_rept
         print (self.files)
+        data = pycdf.CDF(self.files[0])
+        print (data)
 
-        rep = []
-        for v in self.var:
-            rep.append([])
-            for l in self.files:
-                print ('this is' , l)
-                data_rept = pycdf.CDF(l)
-                rep[len(rep)-1].extend(data_rept[v][...])
 
-        for r in rep[4]:
-            r[r == -9999999999999999635896294965248.000] = 'NaN'
+    def readData(self):
+        files = []
+        files_rept = []
+        for names in self.filen:
+            local_file_rept = self.dir + names
+            print local_file_rept
+            files_rept.append(glob.glob(local_file_rept)[0])
+        self.files = files_rept
+        print (self.files)
+        self.data = pycdf.CDF(self.files[0])
 
-        for i in range(0,len(rep[4])):
-            temp = rep[4][i]
-            temp2 = []
-            for l in range(temp.shape[1]):
-                temp2.append(np.nanmean(temp[:,l]))
-            rep[4][i] = temp2
-        if self.rem:
-            for l in self.files:
-                os.remove(l)
-        return rep
+        return (self.data)
 
+    def extract_rept(self, variables):
+        # var_rept = variables
+        self.var = variables
+        self.rep = pd.DataFrame(index=self.data[self.var[0]][...])
+        for v in range(0,len(self.var)):
+            print (self.var[v])
+            dd = (self.data[self.var[v]][...])
+            if len(dd.shape) < 3 and len(dd) == len(self.data[self.var[0]][...]):
+                self.rep[self.var[v]] = np.transpose(dd)
+            elif len(dd.shape) < 3 and len(dd) < len(self.data[self.var[0]][...]):
+                energy_v = dd
+            elif len(dd.shape) == 3 and len(dd) == len(self.data[self.var[0]][...]):
+                ind = v
+                temp = []
+                for i in range(0,dd.shape[2]):
+                    temp2 = []
+                    for j in range(0,dd.shape[0]):
+                        temp2.append(np.mean(dd[j,:,i]))
+                    temp.append(temp2)
+                en = pd.DataFrame(np.transpose(temp),index=self.data[self.var[0]][...])
+                for i in range(0,len(energy_v)):
+                    self.rep[energy_v[i]] = en[i]
+
+
+        self.rep.where(self.rep > -999999, inplace=True)
+
+        return (self.rep)
+#        rep = []
+#        for v in range(0,len(self.var)):
+#            rep.append(self.data[self.var[v]][...])
+#
+#        for r in rep[1:]:
+#            r[r < -9999999999] = 'NaN'
+#
+#        temp = []
+#        for i in range(0,rep[4].shape[2]):
+#            temp2 = []
+#            for j in range(0,rep[4].shape[0]):
+#                temp2.append(np.mean(rep[4][j,:,i]))
+#            temp.append(temp2)
+#
+#        for i in range(0,len(rep[4])):
+#            temp = rep[4][i]
+#            temp2 = []
+#            for l in range(temp.shape[1]):
+#                temp2.append(np.nanmean(temp[:,l]))
+#            rep[4][i] = temp2
+#        if self.rem:
+#            for l in self.files:
+#                os.remove(l)
+#
+#        # create data frame to the variables
+#        # list_df = []*len(self.var)
+#        # for v in range(1,len(self.var)):
+#        #     list_df[v-1] = pd.DataFrame(np.transpose(rep[v]), columns=self.var[v])
+#        return (rep)
+
+# rep = []
+# for v in self.var:
+#     rep.append([])
+#     for l in self.files:
+#         print ('this is' , v)
+#         data_rept = pycdf.CDF(l)
+#         rep[len(rep)-1].extend(data_rept[v][...])
+#
+# for r in rep[4]:
+#     r[r == -9999999999999999635896294965248.000] = 'NaN'
+#
+# for i in range(0,len(rep[4])):
+#     temp = rep[4][i]
+#     temp2 = []
+#     for l in range(temp.shape[1]):
+#         temp2.append(np.nanmean(temp[:,l]))
+#     rep[4][i] = temp2
+# if self.rem:
+#     for l in self.files:
+#         os.remove(l)
 
     # Extract the variables of interest from emfsis .cdf file
     def extract_emfisis(self):
