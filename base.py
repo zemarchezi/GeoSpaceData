@@ -1,5 +1,6 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+# encoding: utf-8
+# encoding: iso-8859-1
+# encoding: win-1252
 """
 Created on Wed May  2 15:13:09 2018
 

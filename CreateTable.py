@@ -37,22 +37,30 @@ class Efw_norm(Base):
     __tablename__ = 'efw_field'
 
     id = Column(sqla.TIMESTAMP(timezone=False), primary_key=True)
-    efield_mgse = Column('efield_mgse', sqla.REAL)
-    spinAxis_gse = Column('spinAxis_gse', sqla.REAL)
+    efield_mgsex = Column('efield_mgseX', sqla.REAL)
+    efield_mgsey = Column('efield_mgseY', sqla.REAL)
+    efield_mgsez = Column('efield_mgseZ', sqla.REAL)
+#    spinAxis_gse = Column('spinAxis_gse', sqla.REAL)
 
 class Efw_High(Base):
     __tablename__ = 'efwhigh_field'
 
     id = Column(sqla.TIMESTAMP(timezone=False), primary_key=True)
-    efield_mgse = Column('efield_mgse', sqla.REAL)
+    efield_mgsex = Column('efield_mgseX', sqla.REAL)
+    efield_mgsey = Column('efield_mgseY', sqla.REAL)
+    efield_mgsez = Column('efield_mgseZ', sqla.REAL)
 
 
 class Emfisis(Base):
     __tablename__ = 'emfisis_field'
 
     id = Column(sqla.TIMESTAMP(timezone=False), primary_key=True)
-    mag = Column('Mag', sqla.REAL)
-    coordinates = Column('coordinates', sqla.REAL)
+    magx = Column('Bx_GSE', sqla.REAL)
+    magy = Column('By_GSE', sqla.REAL)
+    magz = Column('Bz_GSE', sqla.REAL)
+    coordinatesx = Column('x_GSE', sqla.REAL)
+    coordinatesy = Column('y_GSE', sqla.REAL)
+    coordinatesz = Column('z_GSE', sqla.REAL)
 
 
 if __name__ == '__main__':
