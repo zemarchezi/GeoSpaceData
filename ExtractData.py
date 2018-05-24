@@ -28,7 +28,7 @@ class ExtractData():
         files_rept = []
         for names in self.filen:
             local_file_rept = self.dir + names
-            print local_file_rept
+            print (local_file_rept)
             files_rept.append(glob.glob(local_file_rept)[0])
         self.files = files_rept
         print (self.files)
@@ -41,7 +41,7 @@ class ExtractData():
         files_rept = []
         for names in self.filen:
             local_file_rept = names
-            print local_file_rept
+            print (local_file_rept)
             files_rept.append(glob.glob(local_file_rept)[0])
         self.files = files_rept
         print (self.files)
