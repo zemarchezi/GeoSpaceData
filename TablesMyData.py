@@ -33,7 +33,7 @@ class TablesMyData():
             self.con = psycopg2.connect(host=self.host, database=self.database, user=self.user, password=self.passwd)
             # Open a cursor to perform database operations
             self.cur = self.con.cursor()
-        except Exception as e:
+        except (Exception) as e:
             print(e)
 
 
@@ -45,7 +45,7 @@ class TablesMyData():
         try:
             self.cur.execute(ex)
             self.con.commit()
-        except Exception, e:
+        except (Exception) as e:
             print e.pgerror
             self.con.rollback()
 
@@ -56,7 +56,7 @@ class TablesMyData():
             try:
                 self.cur.execute(ex)
                 self.con.commit()
-            except Exception, e:
+            except (Exception) as e:
                 print e.pgerror
                 self.con.rollback()
 
@@ -71,7 +71,7 @@ class TablesMyData():
         try:
             self.cur.execute(ex, self.dat)
             self.con.commit()
-        except Exception, e:
+        except (Exception) as e:
             print e.pgerror
             self.con.rollback()
 

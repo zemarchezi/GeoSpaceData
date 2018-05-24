@@ -48,7 +48,7 @@ class InsertData(object):
             tta = self.data[self.data.index==i].to_dict(orient='records')
             try:
                 conn.execute(table.insert(), tta)
-            except Exception, e:
+            except (Exception) as e:
                 print (e)
 
         # Commit the changes
