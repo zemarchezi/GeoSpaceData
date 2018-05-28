@@ -43,13 +43,18 @@ class InsertData(object):
         table = Table(self.tabnam, meta, autoload=True)
 
         # Inser the dataframe into the database in one bulk
-        for i in self.data.index:
-            print (i)
-            tta = self.data[self.data.index==i].to_dict(orient='records')
-            try:
-                conn.execute(table.insert(), tta)
-            except (Exception) as e:
-                print (e)
+        tta = self.data.to_dict(orient='records')
+        try:
+            conn.execute(table.insert(), tta)
+        except (IntegrityError) as e:
+            print (e[0])
+            for i in self.data.index:
+                print (i)
+                tta = self.data[self.data.index==i].to_dict(orient='records')
+                try:
+                    conn.execute(table.insert(), tta)
+                except (Exception) as e:
+                    print (e[0])
 
         # Commit the changes
         session.commit()
