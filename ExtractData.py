@@ -2,7 +2,7 @@
 # encoding: iso-8859-1
 # encoding: win-1252
 """
-Created on May  018
+Created on May  2018
 @author: zemarchezi
 """
 import numpy as np
