@@ -42,7 +42,7 @@ class InsertData(object):
 
         table = Table(self.tabnam, meta, autoload=True)
 
-        # Inser the dataframe into the database in one bulk
+        # Inser the dataframe into the database in one bulkco
         tta = self.data.to_dict(orient='records')
         try:
             conn.execute(table.insert(), tta)
